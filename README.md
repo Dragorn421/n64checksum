@@ -1,3 +1,5 @@
+This whole repository, including code, notes and documentation, is licensed under CC0-1.0 (public domain, see LICENSE).
+
 # N64 rom checksum
 
 Implementations and research notes on the checksum found in N64 rom headers.
