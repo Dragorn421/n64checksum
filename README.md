@@ -11,7 +11,7 @@ I'm writing what follows after some time put into reading and researching, and f
 N64 roms have a 0x1000-bytes-long header, which includes a 8-bytes checksum starting at offset 0x10 in the rom. ( https://n64brew.dev/wiki/ROM_Header )
 This checksum is computed from 1MB of rom, from 0x1000 to 0x101000.
 
-The checksum is computed from the rom when the N64 boots, and if it doesn't correspond to the one in the header then the game doesn't start. (  )
+The checksum is computed from the rom when the N64 boots, and if it doesn't correspond to the one in the header then the game doesn't start.
 
 So for modding and homebrew we need tools to compute the right checksum and write it in the rom header.
 This repo is about implementing such tools.
@@ -49,9 +49,11 @@ CRC32 (over entire IPL3):
   dynamic = 0xE8B8467D
 Xplorer64 = 0x2E46B62B
 
-"dynamic" includes the GameBooster, GameShark Pro, and Action Replay Pro 64, which dynamically loads the IPL3 from another game.
+"dynamic" includes the GameBooster, GameShark Pro, and Action Replay Pro 64,
+which dynamically loads the IPL3 from another game.
 
-Xplorer64 is another cheat device, similar to the GameShark, but significantly more rare, and has very little documented about it.
+Xplorer64 is another cheat device, similar to the GameShark,
+but significantly more rare, and has very little documented about it.
 ```
 
 The reference implementation linked above handles most of these, the checksum for each is mostly computed almost the same way for each.
@@ -68,13 +70,13 @@ What are they
 
 - https://n64brew.dev/wiki/PIF-NUS
 - https://recon.cx/2015/slides/recon2015-19-mike-ryan-john-mcmaster-marshallh-Reversing-the-Nintendo-64-CIC.pdf
-- https://youtu.be/HwEdqAb2l50
+- Video of the recon2015 talk corresponding to the above slides https://youtu.be/HwEdqAb2l50
 
 The values in emulators:
 
-- https://github.com/mupen64plus/mupen64plus-core/blob/9eb6a7cbefe663c0a7c527afc705f5dea5197d7c/src/device/pif/cic.c#L35
-- https://github.com/ares-emulator/ares/blob/3ca1f9ebb4ae3f472f7fba661746058f84126536/ares/n64/pi/pi.cpp#L38
-- https://github.com/n64dev/cen64/blob/1b31ca9b3c3bb783391ab9773bd26c50db2056a8/si/cic.c#L21-L27
+- mupen64plus https://github.com/mupen64plus/mupen64plus-core/blob/9eb6a7cbefe663c0a7c527afc705f5dea5197d7c/src/device/pif/cic.c#L35
+- ares https://github.com/ares-emulator/ares/blob/3ca1f9ebb4ae3f472f7fba661746058f84126536/ares/n64/pi/pi.cpp#L38
+- cen64 https://github.com/n64dev/cen64/blob/1b31ca9b3c3bb783391ab9773bd26c50db2056a8/si/cic.c#L21-L27
 
 #### How I summarized it
 
@@ -82,9 +84,9 @@ The values in emulators:
 
 To summarize,
 
-The CIC sends an encoded "seed" value to the PIF, `BD 39 3D` (recon2015 56th slide)
-This gets decoded to `B5 3F 3F` (recon2015 calls `B5` an "encryption key", slide 55)
-The actual seed value is `0x3F3F` (the only place I found/saw the full two-bytes seed values seems to be in cen64 https://github.com/n64dev/cen64/blob/1b31ca9b3c3bb783391ab9773bd26c50db2056a8/si/cic.c#L21-L27 )
+- The CIC sends an encoded "seed" value to the PIF, `BD 39 3D` (recon2015 56th slide)
+- This gets decoded to `B5 3F 3F` (recon2015 calls `B5` an "encryption key", slide 55)
+- The actual seed value is `0x3F3F` (the only place I found/saw the full two-bytes seed values seems to be in cen64 https://github.com/n64dev/cen64/blob/1b31ca9b3c3bb783391ab9773bd26c50db2056a8/si/cic.c#L21-L27 )
 
 The lower byte of that (bits 0..7) is used (in the PIF?) to initialize the checksum calculation on IPL3 (to check IPL3 integrity) (implemented in https://github.com/jago85/PifChecksum, the readme may be slightly misleading talking about 4KB of rom starting at 0x40, probably means 0x40 to 0xFFF)
 
